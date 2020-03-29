@@ -1,4 +1,4 @@
-module memory_tb;
+module memory_tb();
   // Parameters
   parameter DATA_WIDTH = 8;
   parameter ADDR_WIDTH = 16;
@@ -6,6 +6,7 @@ module memory_tb;
 
   // Error counter
   integer error_count;
+  
   // Internal variables
   reg write_enable, reset, current_err;
 
@@ -22,48 +23,48 @@ module memory_tb;
   integer test_address;
 
   initial
-    begin
+  begin
     error_count = 0;
     $display("========================\n");
     $display("====> RESET MEMORY <====\n");
     $display("========================\n");
-      reset = 1'b1;
-      #50;
-      reset = 1'b0;
-      #50;
+    reset = 1'b1;
+    #50;
+    reset = 1'b0;
+    #50;
     pattern = 8'b0;
     for(test_address = 0; test_address < RAM_DEPTH; test_address = test_address + 1)
-        begin
+    begin
       write_mem(test_address, pattern);
     end
-      $display ("====> START TEST BENCH <====\n");
-      current_err = 1'b0;
-      pattern     = 8'b0;
 
-      for(test_address = 0; test_address < RAM_DEPTH; test_address = test_address + 1)
-        begin
+    $display ("====> START TEST BENCH <====\n");
+    current_err = 1'b0;
+    pattern     = 8'b0;
+  
+    for(test_address = 0; test_address < RAM_DEPTH; test_address = test_address + 1)
+    begin
       pattern = ~pattern;
-
-          write_mem(test_address, pattern);
-        read_mem(test_address);
-          compare_data(pattern, data_from_mem);
-
+      write_mem(test_address, pattern);
+      read_mem(test_address);
+      compare_data(pattern, data_from_mem);
       if(current_err)
-            begin
+      begin
         $display("ERROR: Failed to read from address '%0d'", test_address);
-              $display ("Expected data = %d, actual data = %d.\n", pattern, data_from_mem);
+        $display ("Expected data = %d, actual data = %d.\n", pattern, data_from_mem);
         error_count = error_count + 1;
-          end
+      end
       else
       begin
-        $display("PASSED: Read from address '%0d' sucseed.", test_address);
-          end
+        $display("PASSED: Read from address '%0d' succeed.", test_address);
+      end
     end
     $display("Test compleated with %0d errors.", error_count);
     if (error_count)
     begin
       $display("==========> TEST FAILED <==========");
-    end else
+    end
+    else
     begin
       $display("==========> TEST PASSED <==========");
     end
@@ -75,17 +76,17 @@ module memory_tb;
     begin
       write_enable = 1;
       address    = my_mem_addr;
-      #100;
       data       = my_mem_data;
-    write_enable = 0;
+      #100;
+      write_enable = 0;
     end
   endtask
 
   task read_mem;
     input [ADDR_WIDTH - 1 : 0] my_mem_addr;
     begin
-      address      = my_mem_addr;
-      write_enable = 0;
+      address       = my_mem_addr;
+      write_enable  = 0;
       #100;
       data_from_mem = data_output;
     end
@@ -100,7 +101,9 @@ module memory_tb;
           current_err = 1;
         end
       else
+      begin
         current_err = 0;
+      end
     end
   endtask
 
@@ -111,7 +114,7 @@ module memory_tb;
                                                   .data_input(data_input),
                                                   .write_enable(write_enable),
                                                   .reset(reset),
-                                              .clk(clk),
-                                              .data_output(data_output)
+                                                  .clk(clk),
+                                                  .data_output(data_output)
                                                   );
 endmodule

@@ -1,5 +1,4 @@
 module clock (clk);
-
   output clk;
 
   reg clk_reg;
